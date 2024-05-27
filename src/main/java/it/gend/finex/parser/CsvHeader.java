@@ -13,7 +13,8 @@ public class CsvHeader {
     private CsvHeader() {
     }
 
-    public static String write(Set<String> esami, StringBuilder header) {
+    public static String write(Set<String> esami) {
+        StringBuilder header = new StringBuilder();
         CsvHeader csvHeader = new CsvHeader();
         header.append(Constant.pazienteHeader);
         esami.forEach(esame -> {

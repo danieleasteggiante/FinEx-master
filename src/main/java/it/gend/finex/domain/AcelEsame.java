@@ -29,12 +29,11 @@ public class AcelEsame extends Esame {
     public void setAlleleMap(Map<String, String> alleleMap) {
         this.alleleMap = alleleMap;
     }
-
     @Override
-    public void setRisulato(String risulato) {
+    public String getRisulato() {
         boolean positive = alleleMap.entrySet().stream()
                 .anyMatch(entry -> entry.getKey().toUpperCase().startsWith("DQ") && !entry.getValue().isEmpty());
-        super.setRisulato(positive ? "POSITIVO" : "NEGATIVO");
+        return positive ? "POSITIVO" : "NEGATIVO";
     }
 
     @Override

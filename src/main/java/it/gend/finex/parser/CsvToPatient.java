@@ -58,7 +58,6 @@ public class CsvToPatient {
                 patientEsameMap.get(patient).add(esame);
             else
                 patientEsameMap.put(patient, new LinkedHashSet<>(List.of(esame)));
-
         }
     }
 
@@ -69,6 +68,8 @@ public class CsvToPatient {
 
         while (iterator.hasNext()) {
             List<String> line = List.of(iterator.next());
+            if(nonContieneValori(line))
+                continue;
             Patient patient = mapToPatient(line);
             AcelEsame acelEsame = new AcelEsame(mapToExam(line));
             mapToAcelExam(line, iterator, acelEsame, patient);
@@ -80,13 +81,24 @@ public class CsvToPatient {
         }
     }
 
+    private boolean nonContieneValori(List<String> line) {
+        if(headerMap.keySet().size() > line.size())
+            return true;
+
+        if(line.stream().allMatch(String::isEmpty))
+            return true;
+
+        return line.stream().allMatch(String::isBlank);
+    }
+
     private void mapToAcelExam(List<String> line, CSVIterator iterator, AcelEsame acelEsame, Patient patient) {
         int count = 1;
         List<List<String>> lines = new ArrayList<>();
         lines.add(0, line);
         lines.addAll(getNext5Lines(iterator, count, patient));
         for (List<String> l : lines) {
-            acelEsame.addAllele(l.get(headerMap.get("ALLELENOME")), l.get(headerMap.get("ALLELEVALORE")));
+            acelEsame.addAllele(l.get(headerMap.get("ALLELENOME")),
+                    l.get(headerMap.get("ALLELEVALORE")));
         }
     }
 
@@ -107,23 +119,12 @@ public class CsvToPatient {
     }
 
     private Patient mapToPatient(List<String> line) {
-        Patient patient =  new Patient(line.get(headerMap.get("IDPAZIENTE")),
+        return new Patient(line.get(headerMap.get("IDPAZIENTE")),
                 line.get(headerMap.get("COGNOME")),
                 line.get(headerMap.get("NOME")),
                 line.get(headerMap.get("DATANASCITA")),
-                line.get(headerMap.get("SESSO")));
-        if (patientEsameMap.containsKey(patient))
-            addFileName(patient);
-        return patient;
-    }
-
-    private void addFileName(Patient patient) {
-        Patient oldPatient = patientEsameMap.keySet()
-                .stream()
-                .filter(p -> p.equals(patient))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Paziente non trovato"));
-        patient.getFileName().addAll(oldPatient.getFileName());
+                line.get(headerMap.get("SESSO")),
+                path.getFileName().toString());
     }
 
     private Esame mapToExam(List<String> line) {

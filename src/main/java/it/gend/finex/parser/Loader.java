@@ -8,7 +8,6 @@ import it.gend.finex.domain.Patient;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Loader extends LoggerClass {
 
@@ -22,28 +21,53 @@ public class Loader extends LoggerClass {
         return new Loader(paths);
     }
 
-    public Map<Patient, Set<Esame>> load() {
-        return paths.stream()
-                .map(filePath -> {
-                    CsvToPatient csvToPatient = new CsvToPatient();
-                    try {
-                        return csvToPatient.parse(Path.of(filePath));
-                    } catch (IOException | CsvException e) {
-                        javafxLogger.severe(e.getMessage());
-                        throw new RuntimeException("Errore durante il parsing del file " + filePath, e);
-                    }
-                })
-                .filter(Objects::nonNull)
-                .flatMap(map -> map.entrySet().stream())
-                .filter(entry -> entry.getKey().getFileName().size() < 2)
-                .sorted(Comparator.comparing(entry -> entry.getKey().getCognome()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> new HashSet<>(entry.getValue()),
-                        (existing, replacement) -> {
-                            existing.addAll(replacement);
-                            return existing;
-                        }
-                ));
+    public Map<Patient, Set<Esame>> load() throws IOException, CsvException {
+        Map<Patient, Set<Esame>> result = new HashMap<>();
+        for (String path : paths) {
+            if (!path.endsWith(".csv")) {
+                throw new IllegalArgumentException("Il file " + path + " non è un file CSV");
+            }
+            CsvToPatient csvToPatient = new CsvToPatient();
+            mergeMaps(result, csvToPatient.parse(Path.of(path)), path);
+        }
+        removeNonMatchingElements(result);
+        return sortByCognome(result);
+    }
+
+    private void mergeMaps(Map<Patient, Set<Esame>> result, Map<Patient, Set<Esame>> newMap, String path) {
+        for (Map.Entry<Patient, Set<Esame>> entry : newMap.entrySet()) {
+            Patient patient = entry.getKey();
+            addFileName(patient, result, path);
+            Set<Esame> esami = entry.getValue();
+            if (result.containsKey(patient))
+                result.get(patient).addAll(esami);
+            else
+                result.put(patient, esami);
+        }
+    }
+
+    private void addFileName(Patient patient, Map<Patient, Set<Esame>> result, String path) {
+        if (!result.containsKey(patient))
+            return;
+        Patient resultPatient = getPatient(result, patient);
+        resultPatient.addFileName(path);
+    }
+
+    private Patient getPatient(Map<Patient, Set<Esame>> result, Patient patient) {
+        for (Patient p : result.keySet()) {
+            if (p.equals(patient))
+                return p;
+        }
+        throw new IllegalArgumentException("Il paziente " + patient + " non è presente nella mappa");
+    }
+
+    private Map<Patient, Set<Esame>> sortByCognome(Map<Patient, Set<Esame>> result) {
+        Map<Patient, Set<Esame>> treeMap = new TreeMap<>(Comparator.comparing(Patient::getCognome));
+        treeMap.putAll(result);
+        return treeMap;
+    }
+
+    private void removeNonMatchingElements(Map<Patient, Set<Esame>> result) {
+        result.entrySet().removeIf(entry -> entry.getKey().getFileName().size() < 2);
     }
 }

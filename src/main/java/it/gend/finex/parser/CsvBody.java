@@ -17,65 +17,80 @@ public class CsvBody {
     private CsvBody() {
     }
 
-    // TODO gestire il caso in cui ci siano due esami con lo
-    //      stesso codice deve andare a capo riempiendo tutto cio che non ha fatto coi trattini
-    //      calcolare il numero di trattini che deve inserire
-    public static String write(Set<String> esamiTotaliSet, Map<Patient, Set<Esame>> patientEsameMap) {
-        StringBuilder bodySb = new StringBuilder();
-        List<String> esamiTotali = List.copyOf(esamiTotaliSet);
-        patientEsameMap.forEach((patient, esami) -> {
-            bodySb.append(patient.getIdPaziente()).append(";")
-                    .append(patient.getNome()).append(";")
-                    .append(patient.getCognome()).append(";")
-                    .append(patient.getDataNascita()).append(";")
-                    .append(patient.getSesso()).append(";");
-            Set<Esame> esamiRimasti = generateEsamiBody(bodySb, esamiTotali, esami, patient);
+    public static String write(List<String> esamiTotali, Map<Patient, Set<Esame>> patientEsameMap, StringBuilder stringBuilder) {
+        if(stringBuilder == null)
+            stringBuilder = new StringBuilder();
+        for(Map.Entry<Patient, Set<Esame>> entry : patientEsameMap.entrySet()) {
+            Patient patient = entry.getKey();
+            Set<Esame> esami = entry.getValue();
+            generatePazienteBody(patient, stringBuilder);
+            Set<Esame> esamiRimasti = generateEsamiBody(stringBuilder, esamiTotali, esami, patient);
             if(!esamiRimasti.isEmpty()) {
-                bodySb.append("\n");
-                write(Set.copyOf(esamiTotali), Map.of(patient, esamiRimasti));
+                stringBuilder.append("\n");
+                write(List.copyOf(esamiTotali), Map.of(patient, esamiRimasti), stringBuilder);
             }
-            bodySb.append("\n");
-        });
-        return bodySb.toString();
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
     }
 
-    private static Set<Esame> generateEsamiBody(StringBuilder bodySb, List<String> esamiTotali, Set<Esame> esami, Patient patient) {
-        Iterator<Esame> iterator = esami.iterator();
+    private static void generatePazienteBody(Patient patient, StringBuilder stringBuilder) {
+        stringBuilder.append(patient.getIdPaziente()).append(";")
+                .append(patient.getNome()).append(";")
+                .append(patient.getCognome()).append(";")
+                .append(patient.getDataNascita()).append(";")
+                .append(patient.getSesso()).append(";");
+    }
+
+    private static Set<Esame> generateEsamiBody(StringBuilder stringBuilder, List<String> esamiTotali, Set<Esame> esamiPaziente, Patient patient) {
+        Iterator<String> iterator = esamiTotali.iterator();
         Set<String> esamiGiaScritti = new HashSet<>();
         while (iterator.hasNext()) {
-            Esame esame = iterator.next();
-            if (esamePuoStareInQuestaRiga(esame, esamiTotali, esamiGiaScritti)) {
-                handleEsame(esame, bodySb);
-                esamiGiaScritti.add(esame.getAnalisiCodice());
-                iterator.remove();
+            String codiceEsame = iterator.next();
+            Esame esamePaziente = getEsameByCodice(esamiPaziente, codiceEsame);
+            if (esamePaziente == null) {
+                writeEmptyEsame(esamiTotali, codiceEsame, stringBuilder);
+                continue;
             }
-            writeEmptyEsame(esamiTotali, esame, bodySb);
+            if (esamePuoStareInQuestaRiga(esamePaziente, esamiTotali, esamiGiaScritti)) {
+                handleEsame(esamePaziente, stringBuilder);
+                esamiGiaScritti.add(codiceEsame);
+                esamiPaziente.remove(esamePaziente);
+            }
         }
-        return esami;
+        return esamiPaziente;
     }
 
-    private static void writeEmptyEsame(List<String> esamiTotali, Esame esame, StringBuilder bodySb) {
-        int posizioneEsame = esamiTotali.indexOf(esame.getAnalisiCodice());
+    private static Esame getEsameByCodice(Set<Esame> esamiPaziente, String codiceEsame) {
+        for(Esame esame : esamiPaziente) {
+            if(esame.getAnalisiCodice().equals(codiceEsame))
+                return esame;
+        }
+        return null;
+    }
+
+    private static void writeEmptyEsame(List<String> esamiTotali, String esameAttuale, StringBuilder stringBuilder) {
+        int posizioneEsame = esamiTotali.indexOf(esameAttuale);
         int spaziDaRiempire = esamiTotali.size() - posizioneEsame;
         if(spaziDaRiempire == 0)
             return;
-        if (esame instanceof AcelEsame) {
-            bodySb.append("-;".repeat(Constant.acelHeaderSize));
+        if (esameAttuale.equalsIgnoreCase("ACEL")) {
+            stringBuilder.append("-;".repeat(Constant.acelHeaderSize));
             return;
         }
-        bodySb.append("-;".repeat(Constant.esameHeaderSize));
+        stringBuilder.append("-;".repeat(Constant.esameHeaderSize));
     }
 
     private static boolean esamePuoStareInQuestaRiga(Esame esame, List<String> esamiTotali, Set<String> esamiGiaScritti) {
         return esamiTotali.contains(esame.getAnalisiCodice()) && !esamiGiaScritti.contains(esame.getAnalisiCodice());
     }
 
-    private static void handleEsame(Esame esame, StringBuilder bodySb) {
+    private static void handleEsame(Esame esame, StringBuilder stringBuilder) {
         if (esame instanceof AcelEsame) {
-            writeAcelEsame((AcelEsame) esame, bodySb);
+            writeAcelEsame((AcelEsame) esame, stringBuilder);
             return;
         }
-        writeEsame(esame, bodySb);
+        writeEsame(esame, stringBuilder);
     }
 
 

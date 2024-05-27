@@ -1,5 +1,6 @@
 package it.gend.finex;
 
+import com.opencsv.exceptions.CsvException;
 import it.gend.finex.domain.Esame;
 import it.gend.finex.domain.Patient;
 import it.gend.finex.parser.CsvExporter;
@@ -10,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -156,16 +158,27 @@ public class BaseController extends LoggerClass {
     }
 
     @FXML
-    void findAndSave(MouseEvent event) throws IOException {
+    void findAndSave() throws IOException, CsvException {
+        Map<Patient, Set<Esame>> result = Loader.of(pathsFileList.stream().map(Path::toString)
+                .collect(Collectors.toSet())).load();
+        if(result.isEmpty()){
+            showAlert(Alert.AlertType.ERROR,"Nessun risultato trovato").showAndWait();
+            return;
+        }
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV", "*.csv"));
         File output = fileChooser.showSaveDialog(apRoot.getScene().getWindow());
         javafxLogger.info("findAndSave");
         javafxLogger.info(pathsFileList.toString());
-        Map<Patient, Set<Esame>> result = Loader.of(pathsFileList.stream().map(Path::toString)
-                .collect(Collectors.toSet())).load();
-        String csvString = PatientToCsvString.generate(result);
-        CsvExporter.writeCSV(csvString,output);
+        String outputString = PatientToCsvString.generate(result);
+        CsvExporter.writeCSV(outputString,output);
+        showAlert(Alert.AlertType.INFORMATION,"File salvato correttamente").showAndWait();
+    }
+
+    private Alert showAlert(Alert.AlertType alertType, String message){
+        Alert a = new Alert(alertType);
+        a.setContentText(message);
+        return a;
     }
 
 }
