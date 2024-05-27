@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="apRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="385.0" prefWidth="419.0" style="-fx-background-color: #cdd1d0;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.gend.finex.BaseController">
+   <children>
+      <Label layoutX="85.0" layoutY="31.0" text="EX." textFill="#fffefe">
+         <font>
+            <Font name="System Bold" size="28.0" />
+         </font>
+      </Label>
+      <Label layoutX="33.0" layoutY="31.0" text="FIN." textFill="#979797">
+         <font>
+            <Font size="28.0" />
+         </font>
+      </Label>
+      <TextField fx:id="tfInputFile1" layoutX="33.0" layoutY="99.0" prefHeight="24.0" prefWidth="238.0" promptText="file input 1" style="-fx-background-color: #f2faf8;" />
+      <TextField fx:id="tfInputFile2" layoutX="33.0" layoutY="141.0" prefHeight="24.0" prefWidth="238.0" promptText="file input 2" style="-fx-background-color: #f2faf8;" />
+      <TextField fx:id="tfInputFile3" layoutX="33.0" layoutY="183.0" prefHeight="24.0" prefWidth="238.0" promptText="file input 3" style="-fx-background-color: #f2faf8;" />
+      <TextField fx:id="tfInputFile4" layoutX="33.0" layoutY="227.0" prefHeight="24.0" prefWidth="238.0" promptText="file input 4" style="-fx-background-color: #f2faf8;" />
+      <TextField fx:id="tfInputFile5" layoutX="33.0" layoutY="271.0" prefHeight="24.0" prefWidth="238.0" promptText="file input 5" style="-fx-background-color: #f2faf8;" />
+      <Button fx:id="btScegli1" layoutX="283.0" layoutY="97.0" mnemonicParsing="false" onMouseClicked="#searchAndAddFile" style="-fx-background-color: #cbf5ea;" text="scegli" />
+      <Button fx:id="btScegli2" layoutX="283.0" layoutY="139.0" mnemonicParsing="false" onMouseClicked="#searchAndAddFile" style="-fx-background-color: #cbf5ea;" text="scegli" />
+      <Button fx:id="btScegli3" layoutX="284.0" layoutY="181.0" mnemonicParsing="false" onMouseClicked="#searchAndAddFile" style="-fx-background-color: #cbf5ea;" text="scegli" />
+      <Button fx:id="btScegli4" layoutX="285.0" layoutY="225.0" mnemonicParsing="false" onMouseClicked="#searchAndAddFile" style="-fx-background-color: #cbf5ea;" text="scegli" />
+      <Button fx:id="btScegli5" layoutX="285.0" layoutY="270.0" mnemonicParsing="false" onMouseClicked="#searchAndAddFile" style="-fx-background-color: #cbf5ea;" text="scegli" />
+      <Button fx:id="btFindAndSave" disable="true" layoutX="33.0" layoutY="317.0" mnemonicParsing="false" onMouseClicked="#findAndSave" prefHeight="35.0" prefWidth="238.0" style="-fx-background-color: #80eb34;" text="find and save" />
+      <Button fx:id="btClear1" disable="true" layoutX="349.0" layoutY="97.0" mnemonicParsing="false" onMouseClicked="#clearFileAndDisable" style="-fx-background-color: #ffdb8c;" text="clear" />
+      <Button fx:id="btClear2" disable="true" layoutX="349.0" layoutY="139.0" mnemonicParsing="false" onMouseClicked="#clearFileAndDisable" style="-fx-background-color: #ffdb8c;" text="clear" />
+      <Button fx:id="btClear3" disable="true" layoutX="349.0" layoutY="181.0" mnemonicParsing="false" onMouseClicked="#clearFileAndDisable" style="-fx-background-color: #ffdb8c;" text="clear" />
+      <Button fx:id="btClear4" disable="true" layoutX="349.0" layoutY="225.0" mnemonicParsing="false" onMouseClicked="#clearFileAndDisable" style="-fx-background-color: #ffdb8c;" text="clear" />
+      <Button fx:id="btClear5" disable="true" layoutX="349.0" layoutY="270.0" mnemonicParsing="false" onMouseClicked="#clearFileAndDisable" style="-fx-background-color: #ffdb8c;" text="clear" />
+   </children>
+</AnchorPane>
