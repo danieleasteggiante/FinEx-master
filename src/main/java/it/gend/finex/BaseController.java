@@ -154,25 +154,35 @@ public class BaseController extends LoggerClass {
         } catch (IllegalAccessException e) {
             javafxLogger.severe("Illegal access: " + e.getMessage());
         }
-
     }
 
     @FXML
     void findAndSave() throws IOException, CsvException {
-        Map<Patient, Set<Esame>> result = Loader.of(pathsFileList.stream().map(Path::toString)
-                .collect(Collectors.toSet())).load();
-        if(result.isEmpty()){
-            showAlert(Alert.AlertType.ERROR,"Nessun risultato trovato").showAndWait();
+        Map<Patient, Set<Esame>> result = getResults();
+        if(result.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Nessun risultato trovato").showAndWait();
             return;
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV", "*.csv"));
         File output = fileChooser.showSaveDialog(apRoot.getScene().getWindow());
-        javafxLogger.info("findAndSave");
-        javafxLogger.info(pathsFileList.toString());
-        String outputString = PatientToCsvString.generate(result);
-        CsvExporter.writeCSV(outputString,output);
-        showAlert(Alert.AlertType.INFORMATION,"File salvato correttamente").showAndWait();
+        generateCsv(result, output);
+    }
+
+    private void generateCsv(Map<Patient, Set<Esame>> result, File output) {
+        try {
+            String outputString = PatientToCsvString.generate(result);
+            CsvExporter.writeCSV(outputString,output);
+            showAlert(Alert.AlertType.INFORMATION,"File salvato correttamente").showAndWait();
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR,"Errore durante il salvataggio del file " + e.getMessage()).showAndWait();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Map<Patient, Set<Esame>> getResults() throws IOException, CsvException {
+        return Loader.of(pathsFileList.stream().map(Path::toString)
+                    .collect(Collectors.toSet())).load();
     }
 
     private Alert showAlert(Alert.AlertType alertType, String message){

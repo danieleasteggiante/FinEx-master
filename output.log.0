@@ -1,10 +1,2 @@
-mag 28, 2024 12:37:18 AM javafx.fxml.FXMLLoader$ValueElement processValue
-AVVERTENZA: Loading FXML document with JavaFX API of version 20.0.1 by JavaFX runtime of version 17.0.6
-mag 28, 2024 12:37:36 AM it.gend.finex.BaseController findAndSave
-INFORMAZIONI: findAndSave
-mag 28, 2024 12:37:36 AM it.gend.finex.BaseController findAndSave
-INFORMAZIONI: [C:\Users\daniele.asteggiante\OneDrive\Desktop\csvElena\ACEL lite.csv, C:\Users\daniele.asteggiante\OneDrive\Desktop\csvElena\ICA lite.csv]
-mag 28, 2024 12:37:57 AM it.gend.finex.BaseController findAndSave
-INFORMAZIONI: findAndSave
-mag 28, 2024 12:37:57 AM it.gend.finex.BaseController findAndSave
-INFORMAZIONI: [C:\Users\daniele.asteggiante\OneDrive\Desktop\csvElena\ACEL lite.csv, C:\Users\daniele.asteggiante\OneDrive\Desktop\csvElena\ICA parziale per esempio.csv]
+mag 28, 2024 6:41:14 PM javafx.fxml.FXMLLoader$ValueElement processValue
+WARNING: Loading FXML document with JavaFX API of version 20.0.1 by JavaFX runtime of version 17.0.6

@@ -25,6 +25,7 @@ public class CsvToPatient {
     List<String> acelHeader = List.of((Constant.defaultHeader + ";" + Constant.acelHeader).split(";"));
     Map<Patient, Set<Esame>> patientEsameMap = new HashMap<>();
     Path path;
+
     public CsvToPatient() {
 
     }
@@ -68,7 +69,7 @@ public class CsvToPatient {
 
         while (iterator.hasNext()) {
             List<String> line = List.of(iterator.next());
-            if(nonContieneValori(line))
+            if (nonContieneValori(line))
                 continue;
             Patient patient = mapToPatient(line);
             AcelEsame acelEsame = new AcelEsame(mapToExam(line));
@@ -82,10 +83,10 @@ public class CsvToPatient {
     }
 
     private boolean nonContieneValori(List<String> line) {
-        if(headerMap.keySet().size() > line.size())
+        if (headerMap.keySet().size() > line.size())
             return true;
 
-        if(line.stream().allMatch(String::isEmpty))
+        if (line.stream().allMatch(String::isEmpty))
             return true;
 
         return line.stream().allMatch(String::isBlank);
@@ -106,8 +107,8 @@ public class CsvToPatient {
         List<List<String>> lines = new ArrayList<>();
         while (iterator.hasNext() && count <= 5) {
             List<String> nextLine = List.of(iterator.next());
-            if(!patientIsTheSame(patient, nextLine))
-                throw new RuntimeException("L'ID del paziente non corrisponde al paziente atteso nel file Acel alla riga " + count + " paziente atteso: " + patient.getIdPaziente() + " paziente atteso : " + patient + " dato trovato: " + nextLine);
+            if (!patientIsTheSame(patient, nextLine))
+                throw new RuntimeException("ID paziente inatteso esame Acel alla riga " + count + " paziente atteso: " + patient.getIdPaziente() + " : " + patient.getCognome() + " dato trovato: " + nextLine);
             lines.add(nextLine);
             count++;
         }
@@ -136,8 +137,22 @@ public class CsvToPatient {
     }
 
     private void handleHeader(CSVIterator iterator, List<String> header) {
-        List<String> line = Stream.of(iterator.next()).map(String::toUpperCase).toList();
-        header.forEach(h -> headerMap.put(h, line.indexOf(h)));
+        List<String> line = deleteBom(Stream.of(iterator.next()).map(String::toUpperCase).toList());
+        for (String s : header) {
+            if (line.contains(s.toUpperCase()))
+                headerMap.put(s, line.indexOf(s.toUpperCase()));
+        }
+    }
+
+    private List<String> deleteBom(List<String> line) {
+        List<String> sanitizedLine = new ArrayList<>();
+        for (String s : line) {
+            if (s.startsWith("\uFEFF"))
+                sanitizedLine.add(line.indexOf(s), s.substring(1));
+            else
+                sanitizedLine.add(s);
+        }
+        return sanitizedLine;
     }
 
     private static CSVReader getCsvReader(Path path) throws IOException {
