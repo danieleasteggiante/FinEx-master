@@ -125,12 +125,12 @@ public class BaseController implements ExceptionHandler {
     @FXML
     void clearFileAndDisable(MouseEvent event) throws NoSuchFieldException, IllegalAccessException {
         Button clickedButton = (Button) event.getSource();
-            TextField inputField = (TextField) getElement("tfInputFile", clickedButton.getId());
-            pathsFileList.remove(Paths.get(inputField.getText()));
-            inputField.clear();
-            clickedButton.disableProperty().set(true);
-            Button btScegliLinked = (Button) getElement("btScegli", clickedButton.getId());
-            btScegliLinked.disableProperty().set(false);
+        TextField inputField = (TextField) getElement("tfInputFile", clickedButton.getId());
+        pathsFileList.remove(Paths.get(inputField.getText()));
+        inputField.clear();
+        clickedButton.disableProperty().set(true);
+        Button btScegliLinked = (Button) getElement("btScegli", clickedButton.getId());
+        btScegliLinked.disableProperty().set(false);
     }
 
     @FXML

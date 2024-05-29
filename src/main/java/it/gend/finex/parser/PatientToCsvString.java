@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PatientToCsvString {
-
     public static String generate(Map<Patient, Set<Esame>> patientEsameMap) {
         Set<String> esami = patientEsameMap.values().stream().flatMap(Set::stream).map(Esame::getAnalisiCodice).collect(Collectors.toSet());
         if(esami.isEmpty())

@@ -28,7 +28,6 @@ public class CsvToPatient {
 
     public CsvToPatient() {
     }
-
     public Map<Patient, Set<Esame>> parse(Path path) throws Throwable {
         this.path = path;
         CSVReader csvReader = getCsvReader(path);
