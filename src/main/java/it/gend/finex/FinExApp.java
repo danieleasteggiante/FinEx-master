@@ -10,6 +10,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import static it.gend.finex.LoggerClass.javafxLogger;
+
 public class FinExApp extends Application {
 
     @Override
@@ -26,9 +28,8 @@ public class FinExApp extends Application {
 
     private void showError(Throwable throwable) {
         Throwable cause = getCausaErrore(throwable);
-
-
         cause.printStackTrace();
+        javafxLogger.severe(cause.getMessage());
         // Optionally, show an error dialog to the user
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);

@@ -20,13 +20,16 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class BaseController extends LoggerClass {
+import static it.gend.finex.LoggerClass.javafxLogger;
+
+public class BaseController {
     @FXML
     private AnchorPane apRoot;
 
@@ -79,28 +82,6 @@ public class BaseController extends LoggerClass {
     private TextField tfInputFile5;
 
     ObservableList<Path> pathsFileList = FXCollections.observableArrayList();
-
-    /**
-     * fase1 : caricamento files - OK
-     * fase2 : se il fileName contiene "ACEL" gestire il caso*
-     * fase3 : inserire 0 davanti a numeri se inferiore a 8 cifre - OK
-     * fase4 : unire tutti i files in un solo elenco- OK
-     * fase5 : ordinare l'elenco
-     * fase6 : definire la struttura della tabella di output
-     * fase7 : raggruppare i record per id paziente in struttura dati che permetta le ripetizioni
-     * fase8 : per ogni gruppo di record, creare una riga di tabella
-     * fase9 : se ci sono doppioni di esame per lo stesso paziente, creare una riga di tabella aggiuntiva per quel paziente
-     * fase10 : se alcuni campi sono vuoti, inserire un valore di default
-     * fase11 : scrivere la tabella su file
-     * fase12 : fine
-     * <p>
-     * *caso ACEL :
-     * - controllare che le righe con nome dei pazienti siano 6 altrimenti scartare loggando l'errore in un file - OK
-     * - per ogni riga valorizzare la colonna con il nome del campo sotto la colonna AlleleHLA con il valore della colonna valoreAllele
-     * - raggruppare i record in un unico record per paziente
-     * - se uno degi alleli, con nome che inizia per DQ, è valorizzato
-     * - inserire nella nuova colonna risultato il valore=POSITIVO - OK
-     */
 
     @FXML
     private void initialize() {
@@ -189,6 +170,18 @@ public class BaseController extends LoggerClass {
         Alert a = new Alert(alertType);
         a.setContentText(message);
         return a;
+    }
+
+    @FXML
+    protected Object getElement(String elementPrefix, String buttonId) throws NoSuchFieldException, IllegalAccessException {
+        Field field = this.getClass().getDeclaredField(elementPrefix + buttonId.substring(buttonId.length() - 1));
+        field.setAccessible(true);
+        return field.get(this);
+    }
+
+    @FXML
+    protected void fillTextField(TextField textField, Path path) {
+        textField.setText(path.toString());
     }
 
 }

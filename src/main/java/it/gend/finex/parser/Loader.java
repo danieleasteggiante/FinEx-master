@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
-public class Loader extends LoggerClass {
+public class Loader {
 
     private final Set<String> paths;
 

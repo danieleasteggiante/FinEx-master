@@ -3,6 +3,7 @@ package it.gend.finex;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -14,6 +15,9 @@ public class LoggerClass {
             java.util.logging.Logger.getLogger("javafx");
 
     static {
+        if(!deleteFileIfExists("output.log"))
+            throw new RuntimeException("Impossibile eliminare il file di log");
+
         FileHandler fh = null;
         try {
             fh = new FileHandler("output.log", (1048576 * 30), 1000);
@@ -25,15 +29,10 @@ public class LoggerClass {
         javafxLogger.addHandler(fh);
     }
 
-    @FXML
-    protected Object getElement(String elementPrefix, String buttonId) throws NoSuchFieldException, IllegalAccessException {
-        Field field = this.getClass().getDeclaredField(elementPrefix + buttonId.substring(buttonId.length() - 1));
-        field.setAccessible(true);
-        return field.get(this);
-    }
-
-    @FXML
-    protected void fillTextField(TextField textField, Path path) {
-        textField.setText(path.toString());
+    private static boolean deleteFileIfExists(String s) {
+        File output = Path.of("output.log").toFile();
+        if(output.exists())
+           return output.delete();
+        return true;
     }
 }
