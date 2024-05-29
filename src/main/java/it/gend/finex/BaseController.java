@@ -7,12 +7,14 @@ import it.gend.finex.parser.CsvExporter;
 import it.gend.finex.parser.Loader;
 import it.gend.finex.parser.PatientToCsvString;
 import it.gend.finex.utils.FileUtils;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -21,6 +23,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -29,7 +32,10 @@ import java.util.stream.Collectors;
 
 import static it.gend.finex.LoggerClass.javafxLogger;
 
-public class BaseController {
+public class BaseController implements ExceptionHandler {
+    @FXML
+    private ProgressBar pbBar;
+
     @FXML
     private AnchorPane apRoot;
 
@@ -85,6 +91,7 @@ public class BaseController {
 
     @FXML
     private void initialize() {
+        pbBar.setVisible(false);
         pathsFileList.addListener((ListChangeListener<? super Path>) c -> {
             while (c.next()) {
                 if (c.wasRemoved() && c.getList().isEmpty())
@@ -95,6 +102,7 @@ public class BaseController {
         });
 
     }
+
     @FXML
     private void openFileAndAddToList(Button button) throws NoSuchFieldException, IllegalAccessException {
         FileChooser fileChooser = new FileChooser();
@@ -103,70 +111,56 @@ public class BaseController {
             pathsFileList.add(Paths.get(file.getAbsolutePath()));
             button.setDisable(true);
             fillTextField((TextField) getElement("tfInputFile", button.getId()), Paths.get(file.getAbsolutePath()));
-            ((Button)getElement("btClear",button.getId())).setDisable(false);
+            ((Button) getElement("btClear", button.getId())).setDisable(false);
         }
     }
 
 
     @FXML
-    void searchAndAddFile(MouseEvent event) {
+    void searchAndAddFile(MouseEvent event) throws NoSuchFieldException, IllegalAccessException {
         Button clickedButton = (Button) event.getSource();
-        try {
-            openFileAndAddToList(clickedButton);
-        } catch (NoSuchFieldException e) {
-            javafxLogger.severe("Button not found: " + e.getMessage());
-        } catch (IllegalAccessException e) {
-            javafxLogger.severe("Illegal access: " + e.getMessage());
-        }
+        openFileAndAddToList(clickedButton);
     }
 
     @FXML
-    void clearFileAndDisable(MouseEvent event) {
+    void clearFileAndDisable(MouseEvent event) throws NoSuchFieldException, IllegalAccessException {
         Button clickedButton = (Button) event.getSource();
-        try {
-            TextField inputField = (TextField) getElement("tfInputFile",clickedButton.getId());
+            TextField inputField = (TextField) getElement("tfInputFile", clickedButton.getId());
             pathsFileList.remove(Paths.get(inputField.getText()));
             inputField.clear();
             clickedButton.disableProperty().set(true);
-            Button btScegliLinked = (Button) getElement("btScegli",clickedButton.getId());
+            Button btScegliLinked = (Button) getElement("btScegli", clickedButton.getId());
             btScegliLinked.disableProperty().set(false);
-        } catch (NoSuchFieldException e) {
-            javafxLogger.severe("Field not found: " + e.getMessage());
-        } catch (IllegalAccessException e) {
-            javafxLogger.severe("Illegal access: " + e.getMessage());
-        }
     }
 
     @FXML
-    void findAndSave() throws IOException, CsvException {
+    void findAndSave() throws Throwable {
+        pbBar.setVisible(true);
         Map<Patient, Set<Esame>> result = getResults();
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Nessun risultato trovato").showAndWait();
+            pbBar.setVisible(false);
             return;
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV", "*.csv"));
         File output = fileChooser.showSaveDialog(apRoot.getScene().getWindow());
         generateCsv(result, output);
+        pbBar.setVisible(false);
     }
 
-    private void generateCsv(Map<Patient, Set<Esame>> result, File output) {
-        try {
-            String outputString = PatientToCsvString.generate(result);
-            CsvExporter.writeCSV(outputString,output);
-            showAlert(Alert.AlertType.INFORMATION,"File salvato correttamente").showAndWait();
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR,"Errore durante il salvataggio del file " + e.getMessage()).showAndWait();
-            throw new RuntimeException(e);
-        }
+    private void generateCsv(Map<Patient, Set<Esame>> result, File output) throws IOException {
+        String outputString = PatientToCsvString.generate(result);
+        CsvExporter.writeCSV(outputString, output);
+        showAlert(Alert.AlertType.INFORMATION, "File salvato correttamente").showAndWait();
     }
 
-    private Map<Patient, Set<Esame>> getResults() throws IOException, CsvException {
+    private Map<Patient, Set<Esame>> getResults() throws Throwable {
         return Loader.of(pathsFileList.stream().map(Path::toString)
-                    .collect(Collectors.toSet())).load();
+                .collect(Collectors.toSet())).load();
     }
 
-    private Alert showAlert(Alert.AlertType alertType, String message){
+    private Alert showAlert(Alert.AlertType alertType, String message) {
         Alert a = new Alert(alertType);
         a.setContentText(message);
         return a;
@@ -182,6 +176,28 @@ public class BaseController {
     @FXML
     protected void fillTextField(TextField textField, Path path) {
         textField.setText(path.toString());
+    }
+
+    @Override
+    public void handleException(Throwable throwable) {
+        Throwable cause = getCausaErrore(throwable);
+        cause.printStackTrace();
+        javafxLogger.severe(cause.getMessage());
+        pbBar.setVisible(false);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("An error occurred");
+        alert.setContentText(cause.getMessage());
+        alert.showAndWait();
+    }
+
+    private Throwable getCausaErrore(Throwable throwable) {
+        Throwable cause;
+        if (throwable.getCause() instanceof InvocationTargetException && throwable.getCause().getCause() != null)
+            cause = throwable.getCause().getCause();
+        else
+            cause = throwable;
+        return cause;
     }
 
 }

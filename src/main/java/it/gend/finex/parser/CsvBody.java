@@ -28,6 +28,7 @@ public class CsvBody {
             if(!esamiRimasti.isEmpty()) {
                 stringBuilder.append("\n");
                 write(List.copyOf(esamiTotali), Map.of(patient, esamiRimasti), stringBuilder);
+                continue;
             }
             stringBuilder.append("\n");
         }

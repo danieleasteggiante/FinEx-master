@@ -28,7 +28,8 @@ public class CsvToPatient {
 
     public CsvToPatient() {
     }
-    public Map<Patient, Set<Esame>> parse(Path path) throws IOException, CsvException {
+
+    public Map<Patient, Set<Esame>> parse(Path path) throws Throwable {
         this.path = path;
         CSVReader csvReader = getCsvReader(path);
         CSVIterator iterator = new CSVIterator(csvReader);
@@ -50,21 +51,17 @@ public class CsvToPatient {
 
         while (iterator.hasNext()) {
             List<String> line = List.of(iterator.next());
-            try {
-                Patient patient = mapToPatient(line);
-                Esame esame = mapToExam(line);
-                esame.setRisulato(line.get(headerMap.get("RISULTATO")));
-                if (patientEsameMap.containsKey(patient))
-                    patientEsameMap.get(patient).add(esame);
-                else
-                    patientEsameMap.put(patient, new LinkedHashSet<>(List.of(esame)));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            Patient patient = mapToPatient(line);
+            Esame esame = mapToExam(line);
+            esame.setRisulato(line.get(headerMap.get("RISULTATO")));
+            if (patientEsameMap.containsKey(patient))
+                patientEsameMap.get(patient).add(esame);
+            else
+                patientEsameMap.put(patient, new LinkedHashSet<>(List.of(esame)));
         }
     }
 
-    private void parseAcelFile(CSVIterator iterator) {
+    private void parseAcelFile(CSVIterator iterator) throws Throwable {
 
         if (iterator.hasNext())
             handleHeader(iterator, acelHeader);
@@ -73,7 +70,6 @@ public class CsvToPatient {
             List<String> line = List.of(iterator.next());
             if (nonContieneValori(line))
                 continue;
-            try {
                 Patient patient = mapToPatient(line);
                 AcelEsame acelEsame = new AcelEsame(mapToExam(line));
                 mapToAcelExam(line, iterator, acelEsame, patient);
@@ -81,9 +77,6 @@ public class CsvToPatient {
                     patientEsameMap.get(patient).add(acelEsame);
                 else
                     patientEsameMap.put(patient, new LinkedHashSet<>(List.of(acelEsame)));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 
@@ -97,7 +90,7 @@ public class CsvToPatient {
         return line.stream().allMatch(String::isBlank);
     }
 
-    private void mapToAcelExam(List<String> line, CSVIterator iterator, AcelEsame acelEsame, Patient patient) {
+    private void mapToAcelExam(List<String> line, CSVIterator iterator, AcelEsame acelEsame, Patient patient) throws Throwable {
         int count = 1;
         List<List<String>> lines = new ArrayList<>();
         lines.add(0, line);
@@ -108,12 +101,14 @@ public class CsvToPatient {
         }
     }
 
-    private List<List<String>> getNext5Lines(CSVIterator iterator, int count, Patient patient) {
+    private List<List<String>> getNext5Lines(CSVIterator iterator, int count, Patient patient) throws Throwable {
         List<List<String>> lines = new ArrayList<>();
         while (iterator.hasNext() && count <= 5) {
             List<String> nextLine = List.of(iterator.next());
-            if (!patientIsTheSame(patient, nextLine))
-                throw new RuntimeException("ID paziente inatteso esame Acel alla riga " + count + " paziente atteso: " + patient.getIdPaziente() + " : " + patient.getCognome() + " dato trovato: " + nextLine);
+            if (!patientIsTheSame(patient, nextLine)) {
+                System.out.println("Exception thrown in thread: " + Thread.currentThread().getName());
+                throw new Throwable("ID paziente inatteso esame Acel alla riga " + count + " paziente atteso: " + patient.getIdPaziente() + " : " + patient.getCognome() + " dato trovato: " + nextLine);
+            }
             lines.add(nextLine);
             count++;
         }
@@ -153,7 +148,7 @@ public class CsvToPatient {
         List<String> sanitizedLine = new ArrayList<>();
         for (String s : line) {
             if (s.contains("\uFEFF"))
-                sanitizedLine.add(s.replaceAll("\uFEFF",""));
+                sanitizedLine.add(s.replaceAll("\uFEFF", ""));
             else
                 sanitizedLine.add(s);
         }

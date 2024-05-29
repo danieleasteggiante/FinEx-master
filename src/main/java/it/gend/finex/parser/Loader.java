@@ -21,7 +21,7 @@ public class Loader {
         return new Loader(paths);
     }
 
-    public Map<Patient, Set<Esame>> load() throws IOException, CsvException {
+    public Map<Patient, Set<Esame>> load() throws Throwable {
         Map<Patient, Set<Esame>> result = new HashMap<>();
         for (String path : paths) {
             if (!path.endsWith(".csv")) {

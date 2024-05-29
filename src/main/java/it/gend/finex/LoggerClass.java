@@ -1,18 +1,14 @@
 package it.gend.finex;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
-
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.logging.FileHandler;
+import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class LoggerClass {
-    protected static final java.util.logging.Logger javafxLogger =
-            java.util.logging.Logger.getLogger("javafx");
+    protected static final Logger javafxLogger = Logger.getLogger("javafx");
 
     static {
         if(!deleteFileIfExists("output.log"))
