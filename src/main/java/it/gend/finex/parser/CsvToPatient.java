@@ -27,9 +27,7 @@ public class CsvToPatient {
     Path path;
 
     public CsvToPatient() {
-
     }
-
     public Map<Patient, Set<Esame>> parse(Path path) throws IOException, CsvException {
         this.path = path;
         CSVReader csvReader = getCsvReader(path);
@@ -52,13 +50,17 @@ public class CsvToPatient {
 
         while (iterator.hasNext()) {
             List<String> line = List.of(iterator.next());
-            Patient patient = mapToPatient(line);
-            Esame esame = mapToExam(line);
-            esame.setRisulato(line.get(headerMap.get("RISULTATO")));
-            if (patientEsameMap.containsKey(patient))
-                patientEsameMap.get(patient).add(esame);
-            else
-                patientEsameMap.put(patient, new LinkedHashSet<>(List.of(esame)));
+            try {
+                Patient patient = mapToPatient(line);
+                Esame esame = mapToExam(line);
+                esame.setRisulato(line.get(headerMap.get("RISULTATO")));
+                if (patientEsameMap.containsKey(patient))
+                    patientEsameMap.get(patient).add(esame);
+                else
+                    patientEsameMap.put(patient, new LinkedHashSet<>(List.of(esame)));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -71,14 +73,17 @@ public class CsvToPatient {
             List<String> line = List.of(iterator.next());
             if (nonContieneValori(line))
                 continue;
-            Patient patient = mapToPatient(line);
-            AcelEsame acelEsame = new AcelEsame(mapToExam(line));
-            mapToAcelExam(line, iterator, acelEsame, patient);
-            if (patientEsameMap.containsKey(patient))
-                patientEsameMap.get(patient).add(acelEsame);
-            else
-                patientEsameMap.put(patient, new LinkedHashSet<>(List.of(acelEsame)));
-
+            try {
+                Patient patient = mapToPatient(line);
+                AcelEsame acelEsame = new AcelEsame(mapToExam(line));
+                mapToAcelExam(line, iterator, acelEsame, patient);
+                if (patientEsameMap.containsKey(patient))
+                    patientEsameMap.get(patient).add(acelEsame);
+                else
+                    patientEsameMap.put(patient, new LinkedHashSet<>(List.of(acelEsame)));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -163,5 +168,4 @@ public class CsvToPatient {
                         .build())
                 .build();
     }
-
 }
