@@ -30,7 +30,7 @@ public class LoggerClass {
     }
 
     private static boolean deleteFileIfExists(String s) {
-        File output = Path.of("output.log").toFile();
+        File output = Path.of(s).toFile();
         if(output.exists())
            return output.delete();
         return true;
