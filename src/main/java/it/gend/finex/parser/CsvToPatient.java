@@ -152,8 +152,8 @@ public class CsvToPatient {
     private List<String> deleteBom(List<String> line) {
         List<String> sanitizedLine = new ArrayList<>();
         for (String s : line) {
-            if (s.startsWith("\uFEFF"))
-                sanitizedLine.add(line.indexOf(s), s.substring(1));
+            if (s.contains("\uFEFF"))
+                sanitizedLine.add(s.replaceAll("\uFEFF",""));
             else
                 sanitizedLine.add(s);
         }
