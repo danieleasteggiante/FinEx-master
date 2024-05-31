@@ -32,8 +32,12 @@ public class AcelEsame extends Esame {
     @Override
     public String getRisulato() {
         boolean positive = alleleMap.entrySet().stream()
-                .anyMatch(entry -> entry.getKey().toUpperCase().startsWith("DQ") && !entry.getValue().isEmpty());
+                .anyMatch(entry -> entry.getKey().toUpperCase().startsWith("DQ") && !hasValue(entry.getValue()));
         return positive ? "POSITIVO" : "NEGATIVO";
+    }
+
+    private boolean hasValue(String value) {
+        return value != null && !value.isBlank() && !value.equals(" - ") && !value.equals("-");
     }
 
     @Override
