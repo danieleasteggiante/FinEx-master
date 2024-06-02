@@ -3,14 +3,17 @@ package it.gend.finex;
 import com.opencsv.exceptions.CsvException;
 import it.gend.finex.domain.Esame;
 import it.gend.finex.domain.Patient;
+import it.gend.finex.domain.ProgressTask;
 import it.gend.finex.parser.CsvExporter;
 import it.gend.finex.parser.Loader;
 import it.gend.finex.parser.PatientToCsvString;
+import it.gend.finex.utils.ControllerUtils;
 import it.gend.finex.utils.FileUtils;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -26,6 +29,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -134,36 +138,27 @@ public class BaseController implements ExceptionHandler {
     }
 
     @FXML
-    void findAndSave() throws Throwable {
+    public void findAndSave() {
         pbBar.setVisible(true);
-        Map<Patient, Set<Esame>> result = getResults();
-        if (result.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Nessun risultato trovato").showAndWait();
+        pbBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+
+        ProgressTask task = new ProgressTask(apRoot, pbBar, new HashSet<Path>(pathsFileList));
+
+        task.setOnSucceeded(event -> {
+            Map<Patient, Set<Esame>> result = task.getValue();
+            if (!result.isEmpty()) {
+                ControllerUtils.showAlert(Alert.AlertType.INFORMATION, "Trovati " + result.keySet().size() + " match!").showAndWait();
+            }
             pbBar.setVisible(false);
-            return;
-        }
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV", "*.csv"));
-        File output = fileChooser.showSaveDialog(apRoot.getScene().getWindow());
-        generateCsv(result, output);
-        pbBar.setVisible(false);
-    }
+        });
 
-    private void generateCsv(Map<Patient, Set<Esame>> result, File output) throws IOException {
-        String outputString = PatientToCsvString.generate(result);
-        CsvExporter.writeCSV(outputString, output);
-        showAlert(Alert.AlertType.INFORMATION, "File salvato correttamente").showAndWait();
-    }
+        task.setOnFailed(event -> {
+            Throwable e = task.getException();
+            ControllerUtils.showAlert(Alert.AlertType.ERROR, "Errore durante l'operazione: " + e.getMessage()).showAndWait();
+            pbBar.setVisible(false);
+        });
 
-    private Map<Patient, Set<Esame>> getResults() throws Throwable {
-        return Loader.of(pathsFileList.stream().map(Path::toString)
-                .collect(Collectors.toSet())).load();
-    }
-
-    private Alert showAlert(Alert.AlertType alertType, String message) {
-        Alert a = new Alert(alertType);
-        a.setContentText(message);
-        return a;
+        new Thread(task).start();
     }
 
     @FXML

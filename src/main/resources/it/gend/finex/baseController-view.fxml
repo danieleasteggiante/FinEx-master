@@ -35,6 +35,6 @@
       <Button fx:id="btClear3" disable="true" layoutX="349.0" layoutY="181.0" mnemonicParsing="false" onMouseClicked="#clearFileAndDisable" style="-fx-background-color: #ffdb8c;" text="clear" />
       <Button fx:id="btClear4" disable="true" layoutX="349.0" layoutY="225.0" mnemonicParsing="false" onMouseClicked="#clearFileAndDisable" style="-fx-background-color: #ffdb8c;" text="clear" />
       <Button fx:id="btClear5" disable="true" layoutX="349.0" layoutY="270.0" mnemonicParsing="false" onMouseClicked="#clearFileAndDisable" style="-fx-background-color: #ffdb8c;" text="clear" />
-      <ProgressBar fx:id="pbBar" layoutX="33.0" layoutY="71.0" prefHeight="18.0" prefWidth="238.0" progress="0.0" visible="false" />
+      <ProgressBar fx:id="pbBar" layoutX="33.0" layoutY="71.0" prefHeight="18.0" prefWidth="238.0" visible="false" />
    </children>
 </AnchorPane>

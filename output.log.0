@@ -1,4 +1,2 @@
-mag 29, 2024 11:56:20 PM it.gend.finex.BaseController handleException
-SEVERE: ID paziente inatteso esame Acel alla riga 2 paziente atteso: 30032722 : DIANOEMA dato trovato: [30036696, PERUGINI, SIMONA, 09/02/1975, F, OM, OM - Punto Prelievi, 15/03/2024, 63243670, ACEL, Ricerca aplotipi HLA correlati con la celiachia, DQB1_2, 2° Aplotipo HLA-DQB1*, 1, 1-Sangue, 3541 - 2023 NON ESENTE, OM - OM - Punto Prelievi, 801985 - AIUTO MARIA ELVIRA, 63243670 15 / 03 / 2024 - 30036696, ACEL v2 - Ricerca aplotipi HLA correlati con la celiachia, A0301]
-mag 29, 2024 11:56:32 PM it.gend.finex.BaseController handleException
-SEVERE: ID paziente inatteso esame Acel alla riga 2 paziente atteso: 30032722 : DIANOEMA dato trovato: [30036696, PERUGINI, SIMONA, 09/02/1975, F, OM, OM - Punto Prelievi, 15/03/2024, 63243670, ACEL, Ricerca aplotipi HLA correlati con la celiachia, DQB1_2, 2° Aplotipo HLA-DQB1*, 1, 1-Sangue, 3541 - 2023 NON ESENTE, OM - OM - Punto Prelievi, 801985 - AIUTO MARIA ELVIRA, 63243670 15 / 03 / 2024 - 30036696, ACEL v2 - Ricerca aplotipi HLA correlati con la celiachia, A0301]
+giu 02, 2024 5:32:35 PM it.gend.finex.BaseController handleException
+SEVERE: java.io.FileNotFoundException: D:\FileRisultati\test_newPatch.csv (Impossibile accedere al file. Il file è utilizzato da un altro processo)

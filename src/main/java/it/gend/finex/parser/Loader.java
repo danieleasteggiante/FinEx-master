@@ -1,11 +1,9 @@
 package it.gend.finex.parser;
 
-import com.opencsv.exceptions.CsvException;
-import it.gend.finex.LoggerClass;
 import it.gend.finex.domain.Esame;
 import it.gend.finex.domain.Patient;
+import javafx.scene.control.ProgressBar;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -13,6 +11,7 @@ public class Loader {
 
     private final Set<String> paths;
 
+    private ProgressBar pbBar;
     private Loader(Set<String> paths) {
         this.paths = paths;
     }
