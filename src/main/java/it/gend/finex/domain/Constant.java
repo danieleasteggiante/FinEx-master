@@ -7,6 +7,6 @@ public interface Constant {
     String risulatoHeader = "RISULTATO";
     String acelHeaderPrint = "ANALISICODICE;NRICHIESTA;DQA1_1;DQA1_2;DQB1_1;DQB1_2;DRB1_1;DRB1_2;" + risulatoHeader;
     String defaultHeader = pazienteHeader + esameHeader + ";" +risulatoHeader;
-    int acelHeaderSize = 8;
+    int acelHeaderSize = 9;
     int esameHeaderSize = 6;
 }
