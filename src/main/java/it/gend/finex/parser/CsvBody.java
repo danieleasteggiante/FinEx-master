@@ -96,6 +96,7 @@ public class CsvBody {
 
     private static void writeAcelEsame(AcelEsame esameSet, StringBuilder body) {
         body.append("ACEL").append(";")
+                .append(esameSet.getnRichiesta()).append(";")
                 .append(esameSet.getAllele("DQA1_1")).append(";")
                 .append(esameSet.getAllele("DQA1_2")).append(";")
                 .append(esameSet.getAllele("DQB1_1")).append(";")

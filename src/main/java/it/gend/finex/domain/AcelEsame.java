@@ -37,7 +37,7 @@ public class AcelEsame extends Esame {
     }
 
     private boolean hasValue(String value) {
-        return value != null && !value.isBlank() && !value.equals(" - ") && !value.equals("-");
+        return value != null && !value.isBlank() && !value.trim().equals("-");
     }
 
     @Override
