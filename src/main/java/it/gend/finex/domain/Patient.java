@@ -16,7 +16,7 @@ public class Patient extends IdStrings {
     private final List<Esame> esami = new ArrayList<>();
 
     public Patient(String idPaziente, String nome, String cognome, String dataNascita, String sesso, String fileName) {
-        this.idPaziente = addZeroesIfNeeded(idPaziente);
+        this.idPaziente = idPaziente;
         this.nome = nome;
         this.cognome = cognome;
         this.dataNascita = dataNascita;

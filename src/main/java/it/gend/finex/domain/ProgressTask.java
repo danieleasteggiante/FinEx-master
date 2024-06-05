@@ -65,7 +65,6 @@ public class ProgressTask extends Task<Map<Patient, Set<Esame>>> {
         try {
             result = Loader.of(pathsFileList.stream().map(Path::toString)
                     .collect(Collectors.toSet())).load();
-            ;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

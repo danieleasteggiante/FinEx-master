@@ -1,2 +1,0 @@
-giu 02, 2024 5:32:35 PM it.gend.finex.BaseController handleException
-SEVERE: java.io.FileNotFoundException: D:\FileRisultati\test_newPatch.csv (Impossibile accedere al file. Il file è utilizzato da un altro processo)

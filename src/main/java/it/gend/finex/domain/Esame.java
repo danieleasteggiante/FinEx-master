@@ -90,13 +90,12 @@ public class Esame extends IdStrings{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Esame esame = (Esame) o;
-        return Objects.equals(idEsame, esame.idEsame);
+        if (!(o instanceof Esame esame)) return false;
+        return Objects.equals(getIdEsame(), esame.getIdEsame()) && Objects.equals(getAnalisiCodice(), esame.getAnalisiCodice()) && Objects.equals(getnRichiesta(), esame.getnRichiesta());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(idEsame);
+        return Objects.hash(getIdEsame(), getAnalisiCodice(), getnRichiesta());
     }
 }

@@ -34,8 +34,8 @@ public class CsvToPatient {
         CSVIterator iterator = new CSVIterator(csvReader);
         if (isAcelFile(path))
             parseAcelFile(iterator);
-
-        parseDefaultFile(iterator);
+        else
+            parseDefaultFile(iterator);
         return patientEsameMap;
     }
 
@@ -120,8 +120,8 @@ public class CsvToPatient {
 
     private Patient mapToPatient(List<String> line) {
         return new Patient(line.get(headerMap.get("IDPAZIENTE")),
-                line.get(headerMap.get("COGNOME")),
                 line.get(headerMap.get("NOME")),
+                line.get(headerMap.get("COGNOME")),
                 line.get(headerMap.get("DATANASCITA")),
                 line.get(headerMap.get("SESSO")),
                 path.getFileName().toString());
