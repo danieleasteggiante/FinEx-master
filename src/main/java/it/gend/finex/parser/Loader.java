@@ -12,6 +12,7 @@ public class Loader {
     private final Set<String> paths;
 
     private ProgressBar pbBar;
+
     private Loader(Set<String> paths) {
         this.paths = paths;
     }
@@ -46,8 +47,10 @@ public class Loader {
     }
 
     private void addFileName(Patient patient, Map<Patient, Set<Esame>> result, String path) {
-        if (!result.containsKey(patient))
+        if (!result.containsKey(patient)) {
+            patient.addFileName(path);
             return;
+        }
         Patient resultPatient = getPatient(result, patient);
         resultPatient.addFileName(path);
     }
@@ -61,9 +64,12 @@ public class Loader {
     }
 
     private Map<Patient, Set<Esame>> sortByCognome(Map<Patient, Set<Esame>> result) {
-        Map<Patient, Set<Esame>> treeMap = new TreeMap<>(Comparator.comparing(Patient::getCognome));
-        treeMap.putAll(result);
-        return treeMap;
+        Map<Patient, Set<Esame>> sortedMap = new LinkedHashMap<>();
+        List<Patient> patients = result.keySet().stream().sorted(Comparator.comparing(Patient::getCognome)).toList();
+        for (Patient patient : patients) {
+            sortedMap.put(patient, result.get(patient));
+        }
+        return sortedMap;
     }
 
     private void removeNonMatchingElements(Map<Patient, Set<Esame>> result) {

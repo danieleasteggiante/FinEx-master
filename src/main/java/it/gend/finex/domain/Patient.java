@@ -15,13 +15,12 @@ public class Patient extends IdStrings {
     private Set<String> fileName = new LinkedHashSet<>();
     private final List<Esame> esami = new ArrayList<>();
 
-    public Patient(String idPaziente, String nome, String cognome, String dataNascita, String sesso, String fileName) {
+    public Patient(String idPaziente, String nome, String cognome, String dataNascita, String sesso) {
         this.idPaziente = idPaziente;
         this.nome = nome;
         this.cognome = cognome;
         this.dataNascita = dataNascita;
         this.sesso = sesso;
-        this.fileName.add(fileName);
     }
 
     public Patient() {

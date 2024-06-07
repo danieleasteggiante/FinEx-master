@@ -123,8 +123,7 @@ public class CsvToPatient {
                 line.get(headerMap.get("NOME")),
                 line.get(headerMap.get("COGNOME")),
                 line.get(headerMap.get("DATANASCITA")),
-                line.get(headerMap.get("SESSO")),
-                path.getFileName().toString());
+                line.get(headerMap.get("SESSO")));
     }
 
     private Esame mapToExam(List<String> line) {
